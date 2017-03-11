@@ -5,47 +5,37 @@
 #ifndef EFFICIENTGRAPH_LIB_ITERATOR_H
 #define EFFICIENTGRAPH_LIB_ITERATOR_H
 
+#include "lib_base.h"
+
 namespace base{
-
-    template <typename G, typename _Item>
-    class ItemIterator {};
-
-    template <typename G>
-    class ItemIterator<G, typename G::Node>{
-    public:
-        typedef G Graph;
-        typedef typename G::Node Item;
-        typedef typename G::NodeIt ItemIt;
-
-        template <typename V>
-        class Map : public G::template NodeMap<V>{
-            typedef typename G :: template NodeMap<V> Parent;
-        public:
-            typedef typename G::template NodeMap<V> Type;
-            typedef typename Parent::Value Value;
-
-            Map(const G & _graph) : Parent (_graph) {}
-            Map(const G & _graph, const Value & _value) : Parent (_graph, _value) {}
-        };
+    //--------------------------------------------iterator wrapper----------------------------------------------------------
+    template <class T>
+    struct IteratorWrapper : public T , public std::iterator<std::input_iterator_tag, T> {
+        IteratorWrapper(const T &x) : T(x) {}
+        const T &operator*() const { return static_cast<const T &>(*this); }
+        const T *operator->(){ return static_cast<const T *>(this); }
+        void operator++(int){ T::operator++; }
+        using T::operator++;
     };
 
-    template <typename G>
-    class ItemIterator<G, typename G::Arc>{
+    template <class LIT, class P>
+    class Iterator1{
+        typedef IteratorWrapper<LIT> It;
+        It _begin;
     public:
-        typedef G Graph;
-        typedef typename G::Arc Item;
-        typedef typename G::ArcIt ItemIt;
+        Iterator1(const P &p) : _begin(LIT(p)) {}
+        It begin() const { return _begin; }
+        It end() const { return It(INVALID); }
+    };
 
-        template <typename V>
-        class Map : public G::template ArcMap<V>{
-            typedef typename G :: template ArcMap<V> Parent;
-        public:
-            typedef typename G::template ArcMap<V> Type;
-            typedef typename Parent::Value Value;
-
-            Map(const G & _graph) : Parent (_graph) {}
-            Map(const G & _graph, const Value & _value) : Parent (_graph, _value) {}
-        };
+    template <class LIT, class P1, class P2>
+    class Iterator2{
+        typedef IteratorWrapper<LIT> It;
+        It _begin;
+    public:
+        Iterator2(const P1 &p1, const P2 &p2) : _begin(LIT(p1, p2)) {}
+        It begin() const { return _begin; }
+        It end() const { return It(INVALID); }
     };
 }
 

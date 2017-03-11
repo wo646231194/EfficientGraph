@@ -10,7 +10,8 @@ namespace base{
     struct False { static const bool value = false; };
     //----------------------------Readable map-------------------------
     template <typename K, typename V>
-    class ReadMap{
+    class ReadMap
+    {
     public:
         typedef K Key;
         typedef V Value;
@@ -22,7 +23,8 @@ namespace base{
 
     //----------------------------Writable map-------------------------
     template <typename K, typename V>
-    class WriteMap{
+    class WriteMap
+    {
     public:
         typedef K Key;
         typedef V Value;
@@ -69,6 +71,54 @@ namespace base{
         }
 
         void set(const Key &k,const Value &v) { operator[](k)=v; }
+    };
+
+
+
+    //---------------------------Map Extender----------------------------
+    template <typename MapT>
+    class MapExtender : public MapT{
+        typedef MapT Parent;
+        typedef typedef Parent::GraphType GraphType;
+    public:
+        typedef MapExtender Map;
+        typedef typename Parent::Key Item;
+        typedef typename Parent::Key Key;
+        typedef typename Parent::Value Value;
+        typedef typename Parent::Reference Reference;
+        typedef typename Parent::ConstReference ConstReference;
+        typedef typename Parent::ReferenceMapTag ReferenceMapTag;
+
+        class MapIt;
+        class ConstMapIt;
+
+        friend class MapIt;
+        friend class ConstMapIt;
+
+        MapExtender(const GraphType & graph) : Parent(graph) {}
+        MapExtender(const GraphType & graph, const Value & value) : Parent(graph, value) {}
+
+    private:
+        MapExtender &operator=(const MapExtender &cmap) { return operator=<MapExtender>(cmap); }
+        template <typename CMap>
+        MapExtender &operator=(const CMap & cmap) { return Parent::operator=(cmap); return *this; }
+
+    public:
+        class MapIt : public Item{
+            typedef Item Parent;
+
+        protected:
+            map;
+
+        public:
+            typedef typename Map::Value Value;
+            MapIt() : map(NULL) {}
+            MapIt(Invalid i) : Parent (i), map(NULL) {}
+
+            explicit MapIt(Map &_map) : map(&_map){
+
+            }
+        };
     };
 }
 

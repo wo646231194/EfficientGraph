@@ -15,6 +15,8 @@ namespace base{
         template<typename G>
         class solver{
         private:
+            Graph_Typedef(G);
+
             typedef std::vector<int> IntVector;
             typedef std::vector<signed char> CharVector;
 
